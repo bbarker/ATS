@@ -1,1 +1,32 @@
+# Temporary files
 .tmp
+*~
+*.swp
+
+# ATS3 (Xanadu) generated output
+# Note: Use !filename.js to whitelist specific JS files if needed
+*.js
+
+# ATS3 Python backend output
+# Note: Use !filename.py to whitelist specific Python files if needed
+*_dats.py
+
+# ATS2 (Postiats) generated C code
+*_dats.c
+*_sats.c
+
+# ATS2 compiled binaries (no extension, but we can't blanket ignore those)
+# Add specific binary names here as needed
+
+# Nix
+result
+result-*
+
+# Editor/IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
