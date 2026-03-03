@@ -681,9 +681,27 @@ registry.ats-lang.org/
 ## Open Questions
 
 1. **TypeScript types**: How to infer `.d.ts` from ATS3 signatures?
+
 2. **Testing**: Cross-backend test framework?
+
+   In Cargo, testing against non-native targets is handled in a few ways depending on the target:
+   - **wasm**: `wasm-pack test` runs tests in a headless browser or Node.js via `wasm-bindgen-test`; alternatively `cargo test --target wasm32-unknown-unknown` pipes output through a JS runner.
+   - **cross-compiled targets (ARM, RISC-V, etc.)**: `cargo test` uses QEMU emulation under the hood (often via the `cross` tool), or tests are run directly on target hardware in CI.
+
+   For ATS3, the analogous question is: given that the same source compiles to both JS and Python, should `cargo ats3 test` run the test suite on every enabled backend automatically? If so, we need a lightweight test harness in each backend language, and a way to write tests once in `.dats` that are compiled and executed per-backend. This is straightforward for unit tests but gets harder for tests that touch backend-specific FFI or I/O.
+
 3. **Workspaces**: Support for monorepos?
+
+   Cargo workspaces allow multiple crates to live in one repository under a root `Cargo.toml` with a `[workspace]` section. Members share a single `Cargo.lock`, can reference each other as path dependencies, and are built/tested together with a single `cargo build`/`cargo test` at the root. This is a common pattern for larger projects (e.g. a library crate + a CLI crate + integration test crates all in one repo).
+
+   The question for `cargo ats3` is whether to support an analogous `Ats3.toml` workspace, so that a monorepo containing multiple ATS3 packages can share a single `Ats3.lock` and be managed cohesively. This becomes relevant as soon as someone wants to develop a library and its consumers together, or split a large project into sub-packages without publishing each one independently.
+
 4. **Versioning**: ATS3 language edition strategy?
+
+   Rust uses *editions* (2015, 2018, 2021, 2024) as an opt-in mechanism for backwards-incompatible language changes. Each crate declares its edition in `Cargo.toml`; the compiler can simultaneously handle crates on different editions in the same build, so the ecosystem doesn't have to migrate all at once. Editions cover things like new reserved keywords, changes to path resolution, or new default behaviors.
+
+   The question for ATS3 is whether to adopt a similar mechanism — i.e. an `edition` field in `Ats3.toml` — so that the language can evolve without immediately breaking existing packages. The alternative is to rely purely on semver on the compiler itself, but that makes it harder to introduce syntax changes without fracturing the ecosystem. Given that ATS3 is still early, this is worth deciding before a stable registry exists.
+
 5. **Binary distribution**: Pre-compiled packages in registry?
 
 ## Success Criteria
