@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.cs.bu.edu)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(git clone:*)",
+      "Bash(nix develop:*)",
+      "Bash(xats2js:*)",
+      "Bash(echo:*)",
+      "Bash(env)",
+      "Bash(printenv:*)",
+      "Bash(export XATSHOME=\"/home/bbarker/workspace/ATS/XATSHOME\")",
+      "Bash(export XATSXANADU=\"/home/bbarker/workspace/ATS/ATS-Xanadu\")",
+      "Bash(node --stack-size=8000:*)",
+      "Bash(node collatz.js:*)",
+      "Bash(XATSHOME=/home/bbarker/workspace/ATS/XATSHOME XATSXANADU=/home/bbarker/workspace/ATS/ATS-Xanadu xats2js:*)",
+      "Bash(export XATSHOME=/home/bbarker/workspace/ATS/XATSHOME)",
+      "Bash(export XATSXANADU=/home/bbarker/workspace/ATS/ATS-Xanadu:*)",
+      "Bash(export:*)",
+      "Bash(node:*)",
+      "Bash(XATSHOME=$PWD/XATSHOME XATSXANADU=$PWD/ATS-Xanadu node:*)",
+      "Bash(XATSHOME=/home/bbarker/workspace/ATS/XATSHOME XATSXANADU=/home/bbarker/workspace/ATS/ATS-Xanadu node:*)",
+      "Bash(XATSHOME=/home/bbarker/workspace/ATS/XATSHOME XATSXANADU=/home/bbarker/workspace/ATS/ATS-Xanadu make:*)",
+      "Bash(nix flake:*)",
+      "Bash(git -C /home/bbarker/workspace/ATS/XATSHOME remote:*)",
+      "Bash(git -C /home/bbarker/workspace/ATS/ATS-Xanadu remote -v)",
+      "Bash(git -C /home/bbarker/workspace/ATS/XATSHOME rev-parse HEAD)",
+      "Bash(git -C /home/bbarker/workspace/ATS/ATS-Xanadu rev-parse:*)",
+      "WebFetch(domain:rustwasm.org)",
+      "WebFetch(domain:crates.io)",
+      "Bash(git check-ignore:*)"
+    ]
+  }
+}
