@@ -231,6 +231,51 @@ target/ats3/python/
     └── my_ats3_lib-0.1.0-py3-none-any.whl
 ```
 
+### Co-Programming: Mixing ATS3-Generated and Hand-Written Code
+
+A common use case is an ATS3-centric project where certain components are
+generated from ATS3 source but need to interoperate with hand-written code in
+the target language. For example, a JS project might use ATS3 for
+performance-critical algorithms while the rest of the application is written
+directly in JavaScript.
+
+`cargo ats3` supports this through the `backends/` directory. For the JS
+backend, the generated `package.json` in `target/ats3/js/` can be consumed
+as a local dependency from a larger JS project:
+
+```
+my-project/
+├── Ats3.toml                   # ATS3 components
+├── src/
+│   └── fast-algo.dats          # ATS3 source
+├── backends/
+│   └── js/
+│       └── package.json        # Customizable npm metadata
+├── app/                        # Hand-written JS application
+│   ├── package.json            # depends on ../target/ats3/js
+│   └── index.js                # imports ATS3-generated modules
+└── target/
+    └── ats3/
+        └── js/                 # Build output, usable as npm package
+```
+
+The hand-written `app/package.json` can reference the ATS3 output as a local
+dependency:
+
+```json
+{
+  "dependencies": {
+    "my-ats3-lib": "file:../target/ats3/js"
+  }
+}
+```
+
+This keeps the ATS3 build pipeline managed by `cargo ats3` while letting the
+host-language project use its own native tooling (npm/yarn, pip, make, etc.)
+to consume the output. The Makefile-based approach many ATS users rely on
+today is effectively replaced by `cargo ats3 build`, but the integration
+point with the surrounding project remains simple: it's just a local package.
+
 ### C Backend (Future)
 
 **Build output:**
@@ -461,6 +506,81 @@ cargo build
 cargo test
 ```
 
+## Scope & Complementary Approaches
+
+`cargo-ats3` is designed for **ATS3-centric projects** — projects where ATS3 is
+the primary language and the JS/Python/C output is the compilation target.
+
+### Consuming ATS3 output from any build system
+
+Even in the ATS3-centric model, the build output is deliberately
+standard packaging for each target language: an npm-ready directory with
+`package.json`, a Python wheel, a C library with headers and `pkg-config`,
+etc. Any host-language build system can consume these artifacts directly
+without knowing anything about ATS3 or Cargo:
+
+- A **Vite/webpack** project adds the ATS3 JS output as a local dependency
+  (`"my-ats3-lib": "file:../target/ats3/js"`)
+- A **pip/poetry** project installs the generated wheel
+  (`pip install ../target/ats3/python/dist/*.whl`)
+- A **CMake/Meson** project links against the C output via `pkg-config`
+
+This means `cargo-ats3` serves as the single canonical way to build ATS3
+source, while the surrounding project consumes the result through its own
+native tooling.
+
+### Host-language build plugins via `cargo ats3`
+
+For tighter integration, host-language build plugins can invoke
+`cargo ats3 build` as a subprocess rather than calling the ATS3 compilers
+directly. This has several advantages:
+
+- **Single source of truth**: All ATS3 build logic (runtime concatenation,
+  dependency resolution, output layout) lives in `cargo-ats3`. Plugins don't
+  need to reimplement it.
+- **Automatic rebuilds**: The plugin just runs
+  `cargo ats3 build --backend js` and consumes the output. `cargo-ats3`
+  handles incremental rebuild logic.
+- **Thin plugins**: A Vite plugin, for instance, reduces to: detect `.dats`
+  changes → run `cargo ats3 build --backend js` → serve from `target/ats3/js/`.
+  Similarly, a setuptools build hook just runs
+  `cargo ats3 build --backend python` before packaging.
+
+Example of what a Vite plugin might look like in practice:
+
+```js
+// vite-plugin-ats3.js
+import { execSync } from 'child_process';
+
+export default function ats3Plugin() {
+  return {
+    name: 'vite-plugin-ats3',
+    buildStart() {
+      execSync('cargo ats3 build --backend js', { stdio: 'inherit' });
+    }
+  };
+}
+```
+
+This pattern keeps `cargo-ats3` as the single build engine while allowing
+each host ecosystem to integrate ATS3 in whatever way feels native to it.
+
+### Future: dedicated host-language plugins
+
+For projects that don't want a `cargo-ats3` dependency at all, dedicated
+plugins could eventually invoke the ATS3 compilers directly:
+
+- **JavaScript-centric**: A Vite, esbuild, or webpack plugin that invokes
+  `xats2js` on `.dats` files and bundles the output alongside hand-written JS.
+- **Python-centric**: A setuptools or hatch build hook that runs `xats2py`
+  during `pip install`.
+- **C-centric**: A CMake or Meson module that invokes `xats2c`.
+
+These would be complementary to `cargo-ats3`.
+However, the `cargo ats3 build`-as-subprocess approach described above is
+likely sufficient for most cases and avoids duplicating build logic across
+multiple plugin implementations.
+
 ## Implementation Roadmap
 
 ### Phase 1: JavaScript Backend (MVP)
@@ -505,6 +625,10 @@ cargo test
 - [ ] IDE/LSP integration
 
 **Deliverable:** Full Rust interop
+
+**Note:** `xats2c` is under active development by Hongwei. This phase may be
+pulled forward depending on when the C backend lands — it does not need to
+wait for Phases 2 and 3 to complete.
 
 ## Rust Crates for Implementation
 
