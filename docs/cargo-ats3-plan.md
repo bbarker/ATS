@@ -8,14 +8,14 @@ Reference: [cargo-ats3-design.md](./cargo-ats3-design.md)
 
 - [ ] Create `cargo-ats3` repo on GitHub (convention: binary named `cargo-ats3`,
       invoked as `cargo ats3`)
-- [ ] Initialize with `cargo init --name cargo-ats3`
-- [ ] Add initial `Cargo.toml` with core dependencies (clap, toml, serde, anyhow)
-- [ ] Add `flake.nix` for Nix-based builds (see design doc for template)
+- [x] Initialize with `cargo init --name cargo-ats3`
+- [x] Add initial `Cargo.toml` with core dependencies (clap, toml, serde, anyhow)
+- [x] Add `flake.nix` for Nix-based builds (see design doc for template)
 - [ ] Add as git submodule in the ATS repo:
       `git submodule add https://github.com/bbarker/cargo-ats3 cargo-ats3`
 - [ ] Wire into the ATS flake as a `path:./cargo-ats3` input so `nix develop`
       includes `cargo-ats3` on `$PATH`
-- [ ] Set up CI (GitHub Actions: `cargo check`, `cargo test`, `cargo clippy`)
+- [x] Set up CI (GitHub Actions: `cargo check`, `cargo test`, `cargo clippy`)
 
 ## Phase 1: Project Scaffolding & Manifest Parsing
 
@@ -24,30 +24,30 @@ manifest can be parsed and validated.
 
 ### 1a. CLI skeleton
 
-- [ ] Set up `clap` derive-based CLI with top-level subcommands:
+- [x] Set up `clap` derive-based CLI with top-level subcommands:
       `new`, `init`, `build`, `add`, `remove`, `check`, `test`, `run`,
       `publish`, `package`, `tree`, `fetch`, `lock`, `login`, `search`, `whoami`
-- [ ] Stub each subcommand with argument parsing and `todo!()` body
-- [ ] Implement `--version`, `--help`
+- [x] Stub each subcommand with argument parsing and `todo!()` body
+- [x] Implement `--version`, `--help`
 
 ### 1b. Ats3.toml parsing
 
-- [ ] Define `Manifest` struct with serde for `[package]`, `[dependencies]`,
+- [x] Define `Manifest` struct with serde for `[package]`, `[dependencies]`,
       `[dev-dependencies]`, `[backends.js]`, `[backends.python]`, `[backends.c]`
-- [ ] Parse and validate `Ats3.toml` from the current directory (or `--manifest-path`)
-- [ ] Error on missing required fields (`name`, `version`)
-- [ ] Round-trip test: parse → serialize → parse yields same result
+- [x] Parse and validate `Ats3.toml` from the current directory (or `--manifest-path`)
+- [x] Error on missing required fields (`name`, `version`)
+- [x] Round-trip test: parse → serialize → parse yields same result
 
 ### 1c. `cargo ats3 new` / `cargo ats3 init`
 
-- [ ] `new <name> [--template lib|bin]`: create directory, generate `Ats3.toml`,
+- [x] `new <name> [--template lib|bin]`: create directory, generate `Ats3.toml`,
       `src/lib.dats` or `src/bin/main.dats`, `.gitignore`, `git init`
-- [ ] `init`: same as `new` but in the current directory
-- [ ] Template for `lib.dats`:
+- [x] `init`: same as `new` but in the current directory
+- [x] Template for `lib.dats`:
       ```ats3
       #include "prelude/HATS/prelude_dats.hats"
       ```
-- [ ] Template for `bin/main.dats`:
+- [x] Template for `bin/main.dats`:
       ```ats3
       #include "prelude/HATS/prelude_dats.hats"
       #include "prelude/HATS/prelude_JS_dats.hats"
@@ -55,7 +55,7 @@ manifest can be parsed and validated.
       val () = println("Hello from ATS3!")
       val () = console_log(the_print_store_flush())
       ```
-- [ ] Integration test: `cargo ats3 new foo && ls foo/Ats3.toml` succeeds
+- [x] Integration test: `cargo ats3 new foo && ls foo/Ats3.toml` succeeds
 
 ## Phase 2: JS Backend Build
 
@@ -64,35 +64,42 @@ self-contained JS package in `target/ats3/js/`.
 
 ### 2a. Compiler invocation
 
-- [ ] Locate `xats2js` on `$PATH` or from `$XATSHOME`
-- [ ] Invoke `xats2js` on the library/binary entry point `.dats` file
-- [ ] Concatenate runtime files (from `$XATSHOME/xassets/JS/xats2js/runtime/`)
+- [x] Locate `xats2js` on `$PATH` or from `$XATSHOME`
+- [x] Invoke `xats2js` on the library/binary entry point `.dats` file
+- [x] Concatenate runtime files (from `$XATSHOME/xassets/JS/xats2js/runtime/`)
       with compiled output (matching the logic in the flake's `xats2js-build`)
-- [ ] Write combined output to `target/ats3/js/index.js`
+- [x] Write combined output to `target/ats3/js/index.js`
 
 ### 2b. Package generation
 
-- [ ] Generate `target/ats3/js/package.json` from `Ats3.toml` metadata
+- [x] Generate `target/ats3/js/package.json` from `Ats3.toml` metadata
       (name, version, description, license; npm-scope from `[backends.js]`)
-- [ ] Support `module-format` config: generate `index.esm.js` for ESM
-- [ ] Respect `[backends.js].target` (node vs browser) in package.json `main`/`module`
+- [x] Support `module-format` config: generate `index.esm.js` for ESM
+- [x] Respect `[backends.js].target` (node vs browser) in package.json `main`/`module`
 
 ### 2c. Incremental rebuilds
 
-- [ ] Track file modification times (or content hashes) for `.dats` source files
-- [ ] Skip rebuild if output is newer than all sources
-- [ ] `--force` flag to bypass
+- [x] Track file modification times (or content hashes) for `.dats` source files
+- [x] Skip rebuild if output is newer than all sources
+- [x] `--force` flag to bypass
 
 ### 2d. `cargo ats3 run`
 
-- [ ] For binary projects: `cargo ats3 run [-- args]` builds then invokes
+- [x] For binary projects: `cargo ats3 run [-- args]` builds then invokes
       `node target/ats3/js/index.js [args]`
-- [ ] Pass through exit code
+- [x] Pass through exit code
+- [x] Accept `--backend` flag; Python runs via `python3`
 
 ### 2e. `cargo ats3 check`
 
-- [ ] Invoke `xats2js` in type-check-only mode (if available), otherwise
+- [x] Invoke `xats2js` in type-check-only mode (if available), otherwise
       run a full build but discard the output
+- [x] Accept `--backend` flag to check with a specific backend
+
+### 2f. `cargo ats3 test`
+
+- [x] Basic test runner: compile and run `tests/test.dats` (or `tests/main.dats`)
+- [x] Support `--backend` flag (JS or Python)
 
 ## Phase 3: Dependency Management (Local + Git)
 
@@ -100,19 +107,27 @@ Goal: `cargo ats3 add`, path dependencies, and git dependencies work.
 
 ### 3a. `cargo ats3 add` / `cargo ats3 remove`
 
-- [ ] Use `toml_edit` to modify `Ats3.toml` in place (preserving formatting)
-- [ ] `add <pkg> --version <ver>`: add to `[dependencies]`
-- [ ] `add <pkg> --git <url>`: add git dependency
-- [ ] `add <pkg> --path <path>`: add path dependency
-- [ ] `add <pkg> --dev`: add to `[dev-dependencies]`
-- [ ] `remove <pkg>`: remove from dependencies
+- [x] Use `toml_edit` to modify `Ats3.toml` in place (preserving formatting)
+- [x] `add <pkg> --version <ver>`: add to `[dependencies]`
+- [x] `add <pkg> --git <url>`: add git dependency
+- [x] `add <pkg> --path <path>`: add path dependency
+- [x] `add <pkg> --dev`: add to `[dev-dependencies]`
+- [x] `remove <pkg>`: remove from dependencies
 
 ### 3b. Path dependencies
+
+**Blocked**: ATS3 resolves `#include` paths relative to the working directory
+and `$XATSHOME`/`$XATSXANADU`. There is no compiler flag for additional
+include paths. Needs design decision on how ATS3 packages reference each
+other (e.g. symlinks into a deps directory, env var manipulation, or
+compiler changes upstream).
 
 - [ ] Resolve `path = "../my-lib"` entries in `[dependencies]`
 - [ ] Include resolved sources on the ATS3 compiler's include path
 
 ### 3c. Git dependencies
+
+**Blocked on 3b**: git deps need the same include resolution mechanism.
 
 - [ ] Clone git repos to `~/.cargo/ats3/git/`
 - [ ] Support `branch`, `tag`, `rev` fields
@@ -120,22 +135,22 @@ Goal: `cargo ats3 add`, path dependencies, and git dependencies work.
 
 ### 3d. `cargo ats3 tree`
 
-- [ ] Display dependency tree (flat list is fine for MVP)
+- [x] Display dependency tree (flat list is fine for MVP)
 
 ## Phase 4: Python Backend
 
 Goal: `cargo ats3 build --backend python` compiles ATS3 source via `xats2py`
 and produces a Python package.
 
-- [ ] Locate `xats2py` on `$PATH`
-- [ ] Invoke `xats2py` on entry-point `.dats` file
-- [ ] Write output to `target/ats3/python/<package_name>/`
-- [ ] Generate `__init__.py` that imports the compiled module
-- [ ] Generate `py.typed` marker
-- [ ] Generate `pyproject.toml` from `Ats3.toml` metadata
+- [x] Locate `xats2py` on `$PATH`
+- [x] Invoke `xats2py` on entry-point `.dats` file
+- [x] Write output to `target/ats3/python/<package_name>/`
+- [x] Generate `__init__.py` (combined runtime + compiled output)
+- [x] Generate `py.typed` marker
+- [x] Generate `pyproject.toml` from `Ats3.toml` metadata
 - [ ] Optional `--wheel` flag: build a wheel in `target/ats3/python/dist/`
       (reference `maturin` for wheel layout)
-- [ ] `cargo ats3 run` for Python: invoke `python target/ats3/python/<pkg>/__init__.py`
+- [x] `cargo ats3 run` for Python: invoke `python target/ats3/python/<pkg>/__init__.py`
 
 ## Phase 5: Lockfile & Registry Resolution
 

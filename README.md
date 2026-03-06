@@ -114,7 +114,15 @@ node hello.js
 
 ## Updating ATS3
 
-To update the ATS3 compiler and runtime to the latest versions:
+To pull the latest changes for all local repos (ATS-Xanadu, XATSHOME, cargo-ats3):
+
+```bash
+./update-repos.sh
+```
+
+This fast-forward merges each repo's default branch from origin. It will **not** overwrite unstaged changes — `--ff-only` will abort if there are conflicts or divergent history.
+
+To update the Nix flake inputs instead:
 
 ```bash
 nix flake update xatshome ats-xanadu

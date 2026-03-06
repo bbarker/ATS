@@ -1,0 +1,12 @@
+[submodule "ATS-Postiats"]
+	path = ATS-Postiats
+	url = https://github.com/githwxi/ATS-Postiats.git
+[submodule "ATS-Xanadu"]
+	path = ATS-Xanadu
+	url = https://github.com/githwxi/ATS-Xanadu.git
+[submodule "XATSHOME"]
+	path = XATSHOME
+	url = https://github.com/githwxi/XATSHOME.git
+[submodule "cargo-ats3"]
+	path = cargo-ats3
+	url = https://github.com/ats-lang/cargo-ats3.git
