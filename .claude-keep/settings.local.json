@@ -52,7 +52,12 @@
       "Bash(cd /tmp/test-ats3-e2e/my-app && XATSHOME=/tmp/test-ats3-e2e/my-app xats2js src/bin/main.dats 2>&1 | grep -i \"err\\\\|TREAD\" | head -5)",
       "Bash(cd /tmp/test-ats3-e2e/my-app && XATSXANADU=/tmp/test-ats3-e2e/my-app xats2js src/bin/main.dats 2>&1 | grep -i \"TREAD\" | head -3)",
       "Bash(git add -A && git diff --cached --stat 2>&1)",
-      "Bash(git ls-tree HEAD | grep ^160000 2>&1)"
+      "Bash(git ls-tree HEAD | grep ^160000 2>&1)",
+      "Bash(cargo build 2>&1)",
+      "Bash(cd /tmp/test-ats3-e2e/my-app && rm -rf target && /home/bbarker/workspace/ATS/cargo-ats3/target/debug/cargo-ats3 ats3 build --force 2>&1)",
+      "Bash(ls /home/bbarker/workspace/ATS/XATSHOME/xassets/JS/xats2js/*.js /home/bbarker/workspace/ATS/XATSHOME/xassets/JS/xats2py/*.js 2>/dev/null)",
+      "Bash(git add src/commands/build.rs src/commands/run.rs README.md)",
+      "Bash(cargo check 2>&1 && cargo test 2>&1 | tail -5)"
     ]
   }
 }

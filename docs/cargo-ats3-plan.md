@@ -116,18 +116,20 @@ Goal: `cargo ats3 add`, path dependencies, and git dependencies work.
 
 ### 3b. Path dependencies
 
-**Blocked**: ATS3 resolves `#include` paths relative to the working directory
-and `$XATSHOME`/`$XATSXANADU`. There is no compiler flag for additional
-include paths. Needs design decision on how ATS3 packages reference each
-other (e.g. symlinks into a deps directory, env var manipulation, or
-compiler changes upstream).
+**Resolved** via XATSHOME overlay: when a project has path dependencies,
+`cargo-ats3` creates a temporary directory that symlinks the real XATSHOME
+contents alongside a `.deps/` directory containing the resolved deps.
+The compiler is invoked with `XATSHOME` pointing to this overlay, so
+`#include ".deps/pkg/src/lib.dats"` resolves via the compiler's XATSHOME
+search path. We invoke `node` directly (bypassing Nix wrapper scripts
+that hardcode XATSHOME).
 
-- [ ] Resolve `path = "../my-lib"` entries in `[dependencies]`
-- [ ] Include resolved sources on the ATS3 compiler's include path
+- [x] Resolve `path = "../my-lib"` entries in `[dependencies]`
+- [x] Include resolved sources on the ATS3 compiler's include path
 
 ### 3c. Git dependencies
 
-**Blocked on 3b**: git deps need the same include resolution mechanism.
+**Unblocked**: git deps can use the same overlay mechanism as path deps.
 
 - [ ] Clone git repos to `~/.cargo/ats3/git/`
 - [ ] Support `branch`, `tag`, `rev` fields

@@ -35,3 +35,19 @@ write some JS code to call mymain_work directly.
 
 > The file xats2js_jsemit01_ats3.js is BIG (2 million lines). Fortunately, I can
 still use emacs to edit it.
+
+## Current Solution: XATSHOME Overlay
+
+The ATS3 compiler resolves bare `#include "..."` paths (no `/` or `./`
+prefix) by searching `$XATSHOME`. We exploit this by creating an overlay
+directory that mirrors real XATSHOME contents (via symlinks) and adds a
+`.deps/` directory with resolved path dependencies. The compiler is invoked
+with `XATSHOME` pointing to this overlay, so `#include ".deps/pkg/src/lib.dats"`
+resolves through the XATSHOME search path.
+
+Key detail: the Nix-generated wrapper scripts hardcode `export XATSHOME=...`,
+so we invoke `node <compiler.js>` directly to control the environment.
+
+This approach works today without compiler changes. A future custom JS
+wrapper (per Hongwei's suggestion above) could replace it with a cleaner
+include-path injection mechanism.

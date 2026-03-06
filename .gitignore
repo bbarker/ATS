@@ -4,6 +4,8 @@
 *.swp
 tmp.txt
 
+target/
+
 # ATS3 (Xanadu) generated output
 # Note: Use !filename.js to whitelist specific JS files if needed
 *.js
